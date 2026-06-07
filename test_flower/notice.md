@@ -1,4 +1,4 @@
-flower_fp16.tflite in this file is the model I trained following the instructions in the official tensorflow website: 
+Flower_fp16.tflite in this file is the model I trained following the instructions in the official tensorflow website: 
 [Official intructions](https://www.tensorflow.org/tutorials/images/classification)
 
 I first run the flower.py and output the model called flower_model.keras.
