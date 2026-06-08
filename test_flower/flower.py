@@ -70,10 +70,13 @@ prefetch let CPU and GPU work at the same time, so there is no need for GPU to w
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 #there is no need to shuffle because order does not affect the accuracy
 
-# 5. 建模型（简单CNN）
-model = tf.keras.Sequential(
+# 5. build a model
+model = tf.keras.Sequential( # Sequential means execute the code following the order in the list
     [
+        # let every pixel value divided by (1.0 / 255) to transform the range of them from 0-255 to 0-1 , because a smaller value is better for deep learning.
         tf.keras.layers.Rescaling(1.0 / 255),
+
+        # 16
         tf.keras.layers.Conv2D(16, 3, activation="relu"),
         tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Conv2D(32, 3, activation="relu"),
