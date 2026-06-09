@@ -70,34 +70,48 @@ prefetch let CPU and GPU work at the same time, so there is no need for GPU to w
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 #there is no need to shuffle because order does not affect the accuracy
 
-# 5. build a model
+# 5. Build a model
 model = tf.keras.Sequential( # Sequential means execute the code following the order in the list
     [
         # let every pixel value divided by (1.0 / 255) to transform the range of them from 0-255 to 0-1 , because a smaller value is better for deep learning.
         tf.keras.layers.Rescaling(1.0 / 255),
 
-        # 16
+        # 16 3*3 filters scan the images, "relu" is used to eliminate noise, highlight features and achieve nonlinearity
         tf.keras.layers.Conv2D(16, 3, activation="relu"),
+
+        # take the maximum number in every 2*2(default) area in order to maintain the features, and at the same time, reduce the size of the images
         tf.keras.layers.MaxPooling2D(),
+
+        # 32 3*3 filters scan the images
         tf.keras.layers.Conv2D(32, 3, activation="relu"),
         tf.keras.layers.MaxPooling2D(),
+
+        # 64 3*3 filters scan the images
         tf.keras.layers.Conv2D(64, 3, activation="relu"),
         tf.keras.layers.MaxPooling2D(),
+
+        # flatten the latest output in three dimensions into one dimensions, because Dense could only receive one dimension input
         tf.keras.layers.Flatten(),
+
+        # put the number list into 128 neurons to match each features and output similarity
         tf.keras.layers.Dense(128, activation="relu"),
+
+        # put the similarity into 5 neurons which correspond to each class and output which class is the most similar
         tf.keras.layers.Dense(5),
     ]
 )
 
-# 6. 编译
+# 6. Compile
 model.compile(
+
+    
     optimizer="adam",
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=["accuracy"],
 )
 
-# 7. 训练
+# 7. 
 model.fit(train_ds, validation_data=val_ds, epochs=5)
 
-# 8. 保存模型
+# 8. Save
 model.save("flower_model.keras")
