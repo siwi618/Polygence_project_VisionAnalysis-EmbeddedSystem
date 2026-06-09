@@ -104,13 +104,17 @@ model = tf.keras.Sequential( # Sequential means execute the code following the o
 # 6. Compile
 model.compile(
 
-    
+    # control how to update parameters
     optimizer="adam",
+
+    # output the difference between the anticipated probability and the real answer, because I haven't written softmax, so from_logits=True
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+
+    # final score
     metrics=["accuracy"],
 )
 
-# 7. 
+# 7. Training
 model.fit(train_ds, validation_data=val_ds, epochs=5)
 
 # 8. Save
