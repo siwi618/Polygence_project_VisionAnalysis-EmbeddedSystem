@@ -25,7 +25,10 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
 keras_model = tf.keras.models.load_model(base_dir / "flower_model.keras")
 
 interpreter = tf.lite.Interpreter(model_path=str(base_dir / "flower_fp16.tflite"))
-interpreter.allocate_tensors()  # allocate memory for inference
+
+# Allocate memory for inference
+interpreter.allocate_tensors()
+
 
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
@@ -34,7 +37,7 @@ output_index = output_details[0]["index"]
 input_dtype = input_details[0]["dtype"]
 
 
-def run_tflite_batch(images: np.ndarray) -> np.ndarray:
+def run_tflite_batch(images: np.ndarray):
     """run tflite inference for a batch of images"""
     results = []
     for img in images:
