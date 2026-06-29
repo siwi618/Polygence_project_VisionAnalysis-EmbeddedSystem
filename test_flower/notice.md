@@ -5,3 +5,5 @@ I first run the flower.py and output the model called flower_model.keras.
 As the screenshot shows, the value accuracy increase from 0.52 to 0.63, and the val_loss decrease from 1.1215 to 1.0146.
 However, the model experiences a few overfitting problems.
 Because flower_model.keras is too big nearly 40MB, I use flower_converter.py to compress it. The new model which is uploaded now is only 6MB
+
+Later, I use model_compare.py to compare the accuracy of flower_fp16.tflite which is compressed with that of flower.keras. Out of my expectation, the accuracy of tflite is similar to that of keras. Even more, it seems that the accuracy is higher without some neurons that model relies on.
