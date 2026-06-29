@@ -58,17 +58,17 @@ max_prob_diff = 0.0
 prob_mae_sum = 0.0
 
 for images, labels in val_ds:
-    # tf.Tensor → numpy；images 已是 0~255，Keras 模型第一层 Rescaling 会自动 /255
+
     images_np = images.numpy()
     labels_np = labels.numpy()
 
-    # Keras 批量预测，输出 shape = (batch_size, 5)
+    # Keras valid in bulk
     keras_logits = keras_model.predict(images_np, verbose=0)
 
-    # TFLite 批量预测（转换后的模型已包含 Rescaling，输入同样是 0~255）
+    # TFLite valid in bulk
     tflite_logits = run_tflite_batch(images_np)
 
-    # argmax(logits) 与 argmax(softmax(logits)) 等价，直接对 logits 取 argmax 即可
+    # argmax(logits) is same to argmax(softmax(logits)) 
     keras_preds = np.argmax(keras_logits, axis=1)
     tflite_preds = np.argmax(tflite_logits, axis=1)
 
