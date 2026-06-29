@@ -1,14 +1,14 @@
 import pathlib
 import tensorflow as tf
 
-# 1. 使用本地博物馆数据集，不再从网上下载
+# 1. Download dataset localy
 data_dir = pathlib.Path("dataset")
 
-# 2. 参数
+# 2. Parament
 batch_size = 32
 img_size = (180, 180)
 
-# 3. 读取数据（关键函数）
+# 3. Read data
 train_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
     validation_split=0.2,
@@ -27,7 +27,7 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=batch_size,
 )
 
-# 4. 打印类别，确认 dataset/ 下每个子文件夹都被当成一个 class
+# 4. Print the classes it recognition
 num_classes = len(train_ds.class_names)
 print("Classes:", train_ds.class_names)
 print("Number of classes:", num_classes)
@@ -36,10 +36,10 @@ AUTOTUNE = tf.data.AUTOTUNE
 train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-# 5. 建模型（简单CNN）
+# 5. Build a model（simple CNN）
 model = tf.keras.Sequential(
     [
-        # 数据增强：只在训练时随机变换图片，验证/推理时自动关闭
+        # Strengthen the training through transition of original images, it would be blocked in validation
         tf.keras.layers.RandomFlip("horizontal"),
         tf.keras.layers.RandomRotation(0.1),
         tf.keras.layers.RandomZoom(0.1),
@@ -62,8 +62,8 @@ model.compile(
     metrics=["accuracy"],
 )
 
-# 6. 训练模型（小数据集需要更多轮次，但也要警惕过拟合）
+# 6. Train model
 model.fit(train_ds, validation_data=val_ds, epochs=15)
 
-# 7. 保存博物馆模型
+# 7. Save
 model.save("museum_model.keras")
