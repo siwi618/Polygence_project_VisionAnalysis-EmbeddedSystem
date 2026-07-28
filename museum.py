@@ -93,9 +93,7 @@ debug_visualize_augmentation(train_ds, data_augmentation, class_names)
 model = tf.keras.Sequential(
     [
         # Strengthen the training through transition of original images, it would be blocked in validation
-        tf.keras.layers.RandomFlip("horizontal"),
-        tf.keras.layers.RandomRotation(0.1),
-        tf.keras.layers.RandomZoom(0.1),
+        data_augmentation,
         tf.keras.layers.Rescaling(1.0 / 255),
         tf.keras.layers.Conv2D(16, 3, activation="relu"),
         tf.keras.layers.MaxPooling2D(),
