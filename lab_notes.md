@@ -32,12 +32,6 @@ Later, I use model_compare.py to compare the accuracy of flower_fp16.tflite whic
 **Observations:**
 [I think with simply expanding dataset and adding argumentation the accuracy of model is already high]
 
-**Compare CNN & TFlite:**
-Model         | Keras Acc | TFLite Acc |  Agree  |   Max Δp   |   Avg Δp  
---------------|-----------|------------|---------|------------|------------
-Custom CNN    |  1.0000  |   1.0000  | 1.0000 | 0.000307 | 0.000010
-MobileNet     |  0.7568  |   0.7568  | 1.0000 | 0.008208 | 0.001752
-
 ## Museum MobileNet Training (Run 1)
 
 **Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class. fish fan is still 20
@@ -61,6 +55,7 @@ MobileNet     |  0.7568  |   0.7568  | 1.0000 | 0.008208 | 0.001752
 - Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/mobilenet_training_history.json)
 
 **Compare all:**
+
 Model                     | Accuracy | File Size | Inference Time
 --------------------------|----------|-----------|---------------
 Custom CNN (Keras)        |  1.0000  |  37.8 MB  |     27.8 ms
@@ -68,4 +63,26 @@ Custom CNN (TFLite fp16)  |  1.0000  |   6.3 MB  |      2.4 ms
 MobileNet (Keras)         |  0.7568  |  23.5 MB  |     31.9 ms
 MobileNet (TFLite fp16)   |  0.7568  |   4.3 MB  |      5.2 ms
 
+**Compare CNN (Keras vs TFLite):**
 
+Model     |  Accuracy 
+----------|------------
+Keras     |  1.0000   (37/37)
+TFLite    |  1.0000   (37/37)
+
+accuracy change:                +0.0000
+agreement rate:                 1.0000 (37/37)
+max probability difference:     0.000307
+average probability difference: 0.000010
+
+**Compare MobileNet (Keras vs TFLite):**
+
+Model     |  Accuracy 
+----------|------------
+Keras     |  0.7568   (28/37)
+TFLite    |  0.7568   (28/37)
+
+accuracy change:                +0.0000
+agreement rate:                 1.0000 (37/37)
+max probability difference:     0.008208
+average probability difference: 0.001752
