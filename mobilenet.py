@@ -76,7 +76,7 @@ base_model.trainable = False  # Phase 1: freeze
 # 6. NEW: Functional API — augment → preprocess → base → GAP → Dropout → Dense
 inputs = tf.keras.Input(shape=IMG_SHAPE)
 x = data_augmentation(inputs)
-x = preprocess_input(x)
+x = tf.keras.layers.Rescaling(1.0 / 127.5, offset=-1)(x)
 x = base_model(x, training=False)  # keep BatchNorm in infer mode
 x = tf.keras.layers.GlobalAveragePooling2D()(x)  # NEW: vs Flatten
 x = tf.keras.layers.Dropout(0.2)(x)
