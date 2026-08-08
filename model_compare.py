@@ -176,9 +176,14 @@ def main() -> None:
         if img_size not in val_cache:
             print(f"Loading validation set at {img_size}...")
             val_cache[img_size] = load_val_arrays(img_size)
+            # Debug once per size (arrays, not tf.data.Dataset) Check numpy arrays directly
+            print(f"  Val array shape: {images.shape}")  # (N, H, W, 3)
+            print(f"  First 5 labels: {labels[:5]}")
+            print(f"  Pixel range: {images.min():.2f} to {images.max():.2f}")
+
         images, labels = val_cache[img_size]
         print(f"\nEvaluating {name} on {len(labels)} val images...")
-
+      
         size_mb = file_size_mb(path)
 
         if cfg["kind"] == "keras":
