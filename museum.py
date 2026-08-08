@@ -29,6 +29,13 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=batch_size,
 )
 
+for images, labels in val_ds.take(1):
+    print(f"Batch shape: {images.shape}")
+    print(f"First 5 labels: {labels[:5].numpy()}")
+    print(
+        f"Pixel range: {tf.reduce_min(images).numpy():.2f} to {tf.reduce_max(images).numpy():.2f}"
+    )
+
 # 4. Print the classes it recognition
 class_names = train_ds.class_names
 num_classes = len(train_ds.class_names)
