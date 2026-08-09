@@ -21,6 +21,7 @@ SEED = 123
 
 
 def load_val_arrays(img_size: tuple[int, int]) -> tuple[np.ndarray, np.ndarray]:
+    # Match museum.py / MobileNet.py split: same dir, split, seed, shuffle=True
     val_ds = tf.keras.utils.image_dataset_from_directory(
         DATA_DIR,
         validation_split=0.2,
@@ -28,7 +29,7 @@ def load_val_arrays(img_size: tuple[int, int]) -> tuple[np.ndarray, np.ndarray]:
         seed=SEED,
         image_size=img_size,
         batch_size=32,
-        shuffle=False,
+        shuffle=True,
     )
     images, labels = [], []
     for batch_x, batch_y in val_ds:
@@ -103,7 +104,7 @@ def format_result(r: dict) -> str:
             f"=== {r['arch']}: Keras vs TFLite (museum dataset) ===",
             "Metric notes:",
             "  - All accuracies below are VALIDATION accuracy (not training).",
-            "  - Split: validation_split=0.2, seed=123 (same as training scripts).",
+            "  - Split: validation_split=0.2, seed=123, shuffle=True (same as museum.py).",
             "  - Agreement: fraction of val images where Keras and TFLite predict the same class.",
             "  - Prob diff: |softmax(Keras) - softmax(TFLite)| on validation images.",
             "",

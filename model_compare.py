@@ -31,7 +31,12 @@ SEED = 123
 
 
 def load_val_arrays(img_size: tuple[int, int]) -> tuple[np.ndarray, np.ndarray]:
-    """Load full validation set as numpy arrays (0–255 float32)."""
+    """Load full validation set as numpy arrays (0–255 float32).
+
+    Must match museum.py split params exactly:
+      directory, validation_split=0.2, seed=123, shuffle=True (Keras default).
+    shuffle affects the file order BEFORE the train/val cut — do not set False.
+    """
     val_ds = tf.keras.utils.image_dataset_from_directory(
         DATA_DIR,
         validation_split=0.2,
@@ -39,7 +44,7 @@ def load_val_arrays(img_size: tuple[int, int]) -> tuple[np.ndarray, np.ndarray]:
         seed=SEED,
         image_size=img_size,
         batch_size=32,
-        shuffle=False,
+        shuffle=True,  # same as museum.py default; needed for identical split
     )
     images, labels = [], []
     for batch_x, batch_y in val_ds:
@@ -176,6 +181,7 @@ def main() -> None:
         if img_size not in val_cache:
             print(f"Loading validation set at {img_size}...")
             val_cache[img_size] = load_val_arrays(img_size)
+            images, labels = val_cache[img_size]
             # Debug once per size (arrays, not tf.data.Dataset) Check numpy arrays directly
             print(f"  Val array shape: {images.shape}")  # (N, H, W, 3)
             print(f"  First 5 labels: {labels[:5]}")
@@ -183,7 +189,7 @@ def main() -> None:
 
         images, labels = val_cache[img_size]
         print(f"\nEvaluating {name} on {len(labels)} val images...")
-      
+
         size_mb = file_size_mb(path)
 
         if cfg["kind"] == "keras":
