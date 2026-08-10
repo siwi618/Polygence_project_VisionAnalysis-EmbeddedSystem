@@ -28,8 +28,8 @@ Later, I use model_compare.py to compare the accuracy of flower_fp16.tflite whic
 - Final training accuracy: 0.98
 - Final validation accuracy: 0.89
 - Best validation accuracy: 0.92 (at epoch 17)
-- Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/training_accuracy.png)
-- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/training_history.json)
+- Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_1/training_accuracy.png)
+- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_1/training_history.json)
 
 **Observations:**
 [I think with simply expanding dataset and adding argumentation the accuracy of model is already high]
@@ -53,8 +53,8 @@ Later, I use model_compare.py to compare the accuracy of flower_fp16.tflite whic
 - Final training accuracy: 0.85
 - Final validation accuracy: 0.86
 - Best validation accuracy: 0.86 (at epoch 20)
-- Loss/accuracy plot: [Graph](None yet)
-- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/mobilenet_training_history.json)
+- Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_1/mobilenet_training_accuracy.png)
+- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_1/mobilenet_training_history.json)
 
 **Compare all:**
 
@@ -88,3 +88,86 @@ accuracy change:                +0.0000
 agreement rate:                 1.0000 (37/37)
 max probability difference:     0.008208
 average probability difference: 0.001752
+
+# RUN 2
+
+## Museum CNN Training
+
+**Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class. fish fan is still 20
+
+**Architecture:** Custom CNN
+
+**Hyperparameters:**
+- Image size: 180×180
+- Batch size: 32
+- Epochs: 38
+- Data augmentation: RandomFlip, RandomRotation, RandomZoom, RandomContrast, RandomBrightness
+
+**Results:**
+- Final training accuracy: 1
+- Final validation accuracy: 0.89
+- Best validation accuracy: 0.94 (at epoch 32)
+- Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_2/training_accuracy.png)
+- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_2/training_history.json)
+
+**Observations:**
+[Training accuracy get 100% more frequently, the best validation accuracy remains the same.]
+
+## Museum MobileNet Training
+
+**Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class. fish fan is still 20
+
+**Architecture:** MobileNet
+
+**Hyperparameters:**
+- Image size: 160×160
+- Batch size: 32
+- initial_epochs = 10 
+- fine_tune_epochs = 10 
+- base_learning_rate = 1e-4
+- fine_tune_at = 100
+- Data augmentation: RandomFlip, RandomRotation, RandomZoom, RandomContrast, RandomBrightness
+
+**Results:**
+- Final training accuracy: 0.88
+- Final validation accuracy: 0.65
+- Best validation accuracy: 0.65 (at epoch 20)
+- Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_2/mobilenet_training_accuracy.png)
+- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_2/mobilenet_training_history.json)
+
+**Compare all:**
+
+Model                     | Accuracy | File Size | Inference Time
+--------------------------|----------|-----------|---------------
+Custom CNN (Keras)        |  0.9189  |  37.8 MB  |     24.9 ms
+Custom CNN (TFLite fp16)  |  0.9189  |   6.3 MB  |      2.4 ms
+MobileNet (Keras)         |  0.6486  |  23.5 MB  |     31.4 ms
+MobileNet (TFLite fp16)   |  0.6486  |   4.3 MB  |      4.7 ms
+
+**Compare CNN (Keras vs TFLite):**
+
+Model     |  Val Accuracy 
+----------|----------------
+Keras     |    0.9189     (34/37)
+TFLite    |    0.9189     (34/37)
+
+val accuracy change (TFLite - Keras): +0.0000
+prediction agreement rate (on val):   1.0000 (37/37)
+max probability difference (on val):  0.000458
+avg probability difference (on val):  0.000018
+
+
+**Compare MobileNet (Keras vs TFLite):**
+
+Model     |  Val Accuracy 
+----------|----------------
+Keras     |    0.6486     (24/37)
+TFLite    |    0.6486     (24/37)
+
+val accuracy change (TFLite - Keras): +0.0000
+prediction agreement rate (on val):   1.0000 (37/37)
+max probability difference (on val):  0.007059
+avg probability difference (on val):  0.001026
+
+**Results compared to Run_1**
+
