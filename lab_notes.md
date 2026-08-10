@@ -10,7 +10,7 @@ Float16 quantization stores each weight as a 16-bit floating point number instea
 
 Later, I use model_compare.py to compare the accuracy of flower_fp16.tflite which is compressed with that of flower.keras. Out of my expectation, TFLite is statistically indistinguishable from Keras on this dataset: they agree on 733 out of 734 images, with sub-millisecond probability differences. The accuracy difference of +0.0014 is within the noise floor of the dataset.
 
-### RUN 1
+# RUN 1
 
 ## Museum CNN Training
 
