@@ -34,7 +34,7 @@ Later, I use model_compare.py to compare the accuracy of flower_fp16.tflite whic
 **Observations:**
 [I think with simply expanding dataset and adding argumentation the accuracy of model is already high]
 
-## Museum MobileNet Training (Run 1)
+## Museum MobileNet Training
 
 **Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class. fish fan is still 20
 
