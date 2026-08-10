@@ -1,0 +1,25 @@
+=== Custom CNN (Keras vs TFLite) ===
+validation set size: 37
+
+Model     |  Accuracy 
+----------|------------
+Keras     |  1.0000   (37/37)
+TFLite    |  1.0000   (37/37)
+
+accuracy change:                +0.0000
+agreement rate:                 1.0000 (37/37)
+max probability difference:     0.000307
+average probability difference: 0.000010
+
+=== MobileNet (Keras vs TFLite) ===
+validation set size: 37
+
+Model     |  Accuracy 
+----------|------------
+Keras     |  0.7568   (28/37)
+TFLite    |  0.7568   (28/37)
+
+accuracy change:                +0.0000
+agreement rate:                 1.0000 (37/37)
+max probability difference:     0.008208
+average probability difference: 0.001752
