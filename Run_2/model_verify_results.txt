@@ -1,0 +1,37 @@
+=== Custom CNN: Keras vs TFLite (museum dataset) ===
+Metric notes:
+  - All accuracies below are VALIDATION accuracy (not training).
+  - Split: validation_split=0.2, seed=123, shuffle=True (same as museum.py).
+  - Agreement: fraction of val images where Keras and TFLite predict the same class.
+  - Prob diff: |softmax(Keras) - softmax(TFLite)| on validation images.
+
+validation set size: 37 images
+
+Model     |  Val Accuracy 
+----------|----------------
+Keras     |    0.9189     (34/37)
+TFLite    |    0.9189     (34/37)
+
+val accuracy change (TFLite - Keras): +0.0000
+prediction agreement rate (on val):   1.0000 (37/37)
+max probability difference (on val):  0.000458
+avg probability difference (on val):  0.000018
+
+=== MobileNet: Keras vs TFLite (museum dataset) ===
+Metric notes:
+  - All accuracies below are VALIDATION accuracy (not training).
+  - Split: validation_split=0.2, seed=123, shuffle=True (same as museum.py).
+  - Agreement: fraction of val images where Keras and TFLite predict the same class.
+  - Prob diff: |softmax(Keras) - softmax(TFLite)| on validation images.
+
+validation set size: 37 images
+
+Model     |  Val Accuracy 
+----------|----------------
+Keras     |    0.6486     (24/37)
+TFLite    |    0.6486     (24/37)
+
+val accuracy change (TFLite - Keras): +0.0000
+prediction agreement rate (on val):   1.0000 (37/37)
+max probability difference (on val):  0.007059
+avg probability difference (on val):  0.001026

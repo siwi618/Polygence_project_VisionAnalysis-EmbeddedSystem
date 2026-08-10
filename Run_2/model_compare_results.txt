@@ -1,0 +1,10 @@
+Validation images (CNN 180): 37
+Validation images (MobileNet 160): 37
+Benchmark runs per model: 100 (after 1 warm-up)
+
+Model                     | Accuracy | File Size | Inference Time
+--------------------------|----------|-----------|---------------
+Custom CNN (Keras)        |  0.9189  |  37.8 MB  |     24.9 ms
+Custom CNN (TFLite fp16)  |  0.9189  |   6.3 MB  |      2.4 ms
+MobileNet (Keras)         |  0.6486  |  23.5 MB  |     31.4 ms
+MobileNet (TFLite fp16)   |  0.6486  |   4.3 MB  |      4.7 ms
