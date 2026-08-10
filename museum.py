@@ -1,16 +1,16 @@
 import json
-
 import pathlib
+
 import tensorflow as tf
 
-# 1. Download dataset localy
+# 1. Local museum dataset
 data_dir = pathlib.Path("dataset")
 
-# 2. Parament
+# 2. Params
 batch_size = 32
 img_size = (180, 180)
 
-# 3. Read data
+# 3. Load train / val (same seed → same split)
 train_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
     validation_split=0.2,
@@ -29,6 +29,7 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=batch_size,
 )
 
+# Debug: check one val batch
 for images, labels in val_ds.take(1):
     print(f"Batch shape: {images.shape}")
     print(f"First 5 labels: {labels[:5].numpy()}")
@@ -36,17 +37,17 @@ for images, labels in val_ds.take(1):
         f"Pixel range: {tf.reduce_min(images).numpy():.2f} to {tf.reduce_max(images).numpy():.2f}"
     )
 
-# 4. Print the classes it recognition
+# 4. Class names (= subfolder names under dataset/)
 class_names = train_ds.class_names
-num_classes = len(train_ds.class_names)
-print("Classes:", train_ds.class_names)
+num_classes = len(class_names)
+print("Classes:", class_names)
 print("Number of classes:", num_classes)
 
 AUTOTUNE = tf.data.AUTOTUNE
 train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-# 5. Reinforcement learning data augmentation layer for training data
+# Augmentation — on at train, off at val/infer
 data_augmentation = tf.keras.Sequential(
     [
         tf.keras.layers.RandomFlip("horizontal"),
@@ -57,11 +58,11 @@ data_augmentation = tf.keras.Sequential(
     ]
 )
 
-# 6. Make sure the augmentation is working
+
 def debug_visualize_augmentation(
     dataset, augmentation, class_names, num_images=4, save_path="augmentation_debug.png"
 ):
-    """Before training, pick a batch of images and visualize the augmentation"""
+    """Save a few original vs augmented images to check augmentation works."""
     import matplotlib.pyplot as plt
 
     images, labels = next(iter(dataset))
@@ -96,10 +97,9 @@ def debug_visualize_augmentation(
 
 debug_visualize_augmentation(train_ds, data_augmentation, class_names)
 
-# 7. Build a model（simple CNN）
+# 5. Simple CNN
 model = tf.keras.Sequential(
     [
-        # Strengthen the training through transition of original images, it would be blocked in validation
         data_augmentation,
         tf.keras.layers.Rescaling(1.0 / 255),
         tf.keras.layers.Conv2D(16, 3, activation="relu"),
@@ -113,19 +113,35 @@ model = tf.keras.Sequential(
         tf.keras.layers.Dense(num_classes),
     ]
 )
-
 model.compile(
     optimizer="adam",
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=["accuracy"],
 )
 
-# 8. Train model
-model.fit(train_ds, validation_data=val_ds, epochs=30) # smaller dataset, more epoches
+# Stop if val_loss does not improve; restore best weights
+early_stop = tf.keras.callbacks.EarlyStopping(
+    monitor="val_loss",
+    patience=5,
+    restore_best_weights=True,
+    verbose=1,
+)
 
-# 9. Save
+# 6. Train (epochs is a ceiling; early stopping may finish sooner)
+history = model.fit(
+    train_ds,
+    validation_data=val_ds,
+    epochs=50,
+    callbacks=[early_stop],
+)
+
 with open("training_history.json", "w") as f:
     json.dump(history.history, f, indent=2)
 print("Training history saved to training_history.json")
+print(
+    f"Stopped at epoch {len(history.history['loss'])} "
+    "(best weights restored if early-stopped)"
+)
 
+# 7. Save model
 model.save("museum_model.keras")

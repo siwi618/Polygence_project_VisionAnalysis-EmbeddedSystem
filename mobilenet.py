@@ -62,9 +62,6 @@ data_augmentation = tf.keras.Sequential(
     name="data_augmentation",
 )
 
-# NEW vs museum.py: MobileNet preprocess [0,255] → [-1,1] (not Rescaling/255)
-preprocess_input = tf.keras.applications.mobilenet_v2.preprocess_input
-
 # 5. NEW: pretrained ImageNet backbone (no 1000-class top)
 base_model = tf.keras.applications.MobileNetV2(
     input_shape=IMG_SHAPE,
@@ -73,7 +70,9 @@ base_model = tf.keras.applications.MobileNetV2(
 )
 base_model.trainable = False  # Phase 1: freeze
 
-# 6. NEW: Functional API — augment → preprocess → base → GAP → Dropout → Dense
+# 6. Build model — Rescaling maps [0,255] → [-1,1] for MobileNet
+#    (same math as mobilenet_v2.preprocess_input; do NOT also use that)
+#    0 → -1,  127.5 → 0,  255 → 1
 inputs = tf.keras.Input(shape=IMG_SHAPE)
 x = data_augmentation(inputs)
 x = tf.keras.layers.Rescaling(1.0 / 127.5, offset=-1)(x)
@@ -85,6 +84,13 @@ model = tf.keras.Model(inputs, outputs)
 
 model.summary()
 
+early_stop = tf.keras.callbacks.EarlyStopping(
+    monitor="val_loss",
+    patience=5,
+    restore_best_weights=True,
+    verbose=1,
+)
+
 # 7. Phase 1 — train head only
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=base_learning_rate),
@@ -93,9 +99,14 @@ model.compile(
 )
 
 print("\nPhase 1: feature extraction (base frozen)")
-history = model.fit(train_ds, validation_data=val_ds, epochs=initial_epochs)
+history = model.fit(
+    train_ds,
+    validation_data=val_ds,
+    epochs=initial_epochs,
+    callbacks=[early_stop],
+)
 
-# 8. Phase 2 — NEW vs museum.py: unfreeze top of base, lower LR
+# 8. Phase 2 — unfreeze top of base, lower LR
 base_model.trainable = True
 for layer in base_model.layers[:fine_tune_at]:
     layer.trainable = False
@@ -111,13 +122,22 @@ model.compile(
     metrics=["accuracy"],
 )
 
+# Fresh EarlyStopping for phase 2 (previous callback already used / may have stopped)
+early_stop_ft = tf.keras.callbacks.EarlyStopping(
+    monitor="val_loss",
+    patience=5,
+    restore_best_weights=True,
+    verbose=1,
+)
+
 total_epochs = initial_epochs + fine_tune_epochs
 print("\nPhase 2: fine-tuning")
 history_fine = model.fit(
     train_ds,
     validation_data=val_ds,
     epochs=total_epochs,
-    initial_epoch=history.epoch[-1] + 1,  # continue epoch count
+    initial_epoch=history.epoch[-1] + 1,
+    callbacks=[early_stop_ft],
 )
 
 # 9. Merge histories for plotting
@@ -128,6 +148,10 @@ for key in history.history:
 with open("mobilenet_training_history.json", "w") as f:
     json.dump(merged, f, indent=2)
 print("Training history saved to mobilenet_training_history.json")
+print(
+    f"Phase 1 epochs: {len(history.history['loss'])}, "
+    f"Phase 2 epochs: {len(history_fine.history['loss'])}"
+)
 
 # 10. Save (names differ from museum.py so they don't overwrite)
 model.save("mobilenet_museum_model.keras")
