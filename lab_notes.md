@@ -171,3 +171,4 @@ avg probability difference (on val):  0.001026
 
 ## Results compared to Run_1
 
+It's seem that the validation accuracy of 
