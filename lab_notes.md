@@ -171,4 +171,4 @@ avg probability difference (on val):  0.001026
 
 ## Results compared to Run_1
 
-It's seem that the validation accuracy of 
+It's seem that the validation accuracy of CNN returned to normal (from 1 to 0.9189). However, the overall accuracy of MobileNet is still lower than that of CNN
