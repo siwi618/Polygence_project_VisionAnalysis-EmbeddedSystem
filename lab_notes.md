@@ -110,9 +110,6 @@ average probability difference: 0.001752
 - Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_2/training_accuracy.png)
 - Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_2/training_history.json)
 
-**Observations:**
-[Training accuracy get 100% more frequently, the best validation accuracy remains the same.]
-
 ## Museum MobileNet Training
 
 **Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class. fish fan is still 20
@@ -169,6 +166,85 @@ prediction agreement rate (on val):   1.0000 (37/37)
 max probability difference (on val):  0.007059
 avg probability difference (on val):  0.001026
 
-## Results compared to Run_1
+**Observations:**
 
-It's seem that the validation accuracy of CNN returned to normal (from 1 to 0.9189). However, the overall accuracy of MobileNet is still lower than that of CNN
+[Training accuracy of CNN get 100% more frequently, the best validation accuracy remains the same.] It's seem that the validation accuracy of CNN returned to normal (from 1 to 0.9189). However, the overall accuracy of MobileNet is still lower than that of CNN
+
+# RUN 3
+
+## Museum CNN Training
+
+**Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class.
+
+**Architecture:** Custom CNN (same as flower.py, output Dense layer = 5)
+
+**Hyperparameters:**
+- Image size: 180×180
+- Batch size: 32
+- Epochs: 17
+- Data augmentation: RandomFlip, RandomRotation, RandomZoom, RandomContrast, RandomBrightness
+
+**Results:**
+- Final training accuracy: 0.91
+- Final validation accuracy: 0.78
+- Best validation accuracy: 0.85 (at epoch 9)
+- Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_3/training_accuracy.png)
+- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_3/training_history.json)
+
+## Museum MobileNet Training
+
+**Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class.
+
+**Architecture:** MobileNet
+
+**Hyperparameters:**
+- Image size: 160×160
+- Batch size: 32
+- initial_epochs = 10 
+- fine_tune_epochs = 10 
+- base_learning_rate = 1e-4
+- fine_tune_at = 100
+- Data augmentation: RandomFlip, RandomRotation, RandomZoom, RandomContrast, RandomBrightness
+
+**Results:**
+- Final training accuracy: 0.90
+- Final validation accuracy: 0.90
+- Best validation accuracy: 0.90 (at epoch 19)
+- Loss/accuracy plot: [Graph](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_3/mobilenet_training_accuracy.png)
+- Json history: [File](https://github.com/siwi618/Polygence_project_VisionAnalysis-EmbeddedSystem/blob/main/Run_3/mobilenet_training_history.json)
+
+**Compare all:**
+
+Model                     | Accuracy | File Size | Inference Time
+--------------------------|----------|-----------|---------------
+Custom CNN (Keras)        |  0.8537  |  37.8 MB  |     23.5 ms
+Custom CNN (TFLite fp16)  |  0.8537  |   6.3 MB  |      2.3 ms
+MobileNet (Keras)         |  0.9024  |  23.5 MB  |     29.7 ms
+MobileNet (TFLite fp16)   |  0.9024  |   4.3 MB  |      4.5 ms
+
+**Compare CNN (Keras vs TFLite):**
+
+Model     |  Val Accuracy 
+----------|----------------
+Keras     |    0.8537     (35/41)
+TFLite    |    0.8537     (35/41)
+
+val accuracy change (TFLite - Keras): +0.0000
+prediction agreement rate (on val):   1.0000 (41/41)
+max probability difference (on val):  0.000281
+avg probability difference (on val):  0.000023
+
+**Compare MobileNet (Keras vs TFLite):**
+
+Model     |  Val Accuracy 
+----------|----------------
+Keras     |    0.9024     (37/41)
+TFLite    |    0.9024     (37/41)
+
+val accuracy change (TFLite - Keras): +0.0000
+prediction agreement rate (on val):   1.0000 (41/41)
+max probability difference (on val):  0.010798
+avg probability difference (on val):  0.001413
+
+**Observations:**
+This run, I added 20 picture of fish fan in another side. Although the pattern is difference, all of these pictures refer to the same class. Comparing to Run_2, the val_accuracy of CNN decrease and become lower than MobileNet, which is I expected in beginning. I guess CNN is more dependent on the dataset, because of its small size.
