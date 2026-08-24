@@ -170,6 +170,30 @@ avg probability difference (on val):  0.001026
 
 [Training accuracy of CNN get 100% more frequently, the best validation accuracy remains the same.] It's seem that the validation accuracy of CNN returned to normal (from 1 to 0.9189). However, the overall accuracy of MobileNet is still lower than that of CNN
 
+## Debugging Notes — CNN “100%” validation accuracy
+
+### Symptom
+'model_compare' && 'model_verify' reported Custom CNN accuracy **1.0000** (37/37), while training history never sustained that: last 'fit' val accuracy was about **0.89** (peak ~0.92).
+
+### What I tried
+- Compare scripts on the same 'seed=123' split.
+- Checked 'model(..., training=True)' vs 'training=False' on the val set (augmentation was not the cause of the 1.0 gap).
+- Confirmed Keras vs TFLite agreement ≈ 100% with tiny probability diffs -> conversion was fine; the issue was the metric itself.
+- Audited train/val construction: 'museum.py' vs 'model_compare.py' / 'model_verify.py' (path, 'validation_split', 'seed', 'shuffle').
+
+### What I found
+- Evaluat scripts **rebuilt** the dataset with 'image_dataset_from_directory' instead of reusing training’s 'val_ds'.
+- I used **'shuffle=False'** while training used the Keras default **'shuffle=True'**. In Keras, shuffle runs **before** the train/val cut, so this produced a **different validation set**, which can overlap training images → inflated accuracy.
+- Dataset is tiny (~187 images, ~37 val). One mistake ≈ 2.7%; near-duplicate shots of the same object make the split easy to 'memorize'. Class sizes are uneven (`fish_fan` smaller).
+
+### Root cause
+1. **Primary bug:** mismatched 'shuffle' between train and eval → wrong (over-optimistic / leaky) validation set → reported **100%**.
+2. **Underlying ML issue:** small data + overfitting + noisy 37-image val; even on the correct split, high scores are fragile and should not be treated as 'perfect generalization'.
+
+### Fix / takeaway
+- Set 'shuffle=True' in 'model_compare.py' and 'model_verify.py' to match 'museum.py' . After the fix, CNN compare accuracy dropped to ~**0.92**, in line with training curves ('Run_2').
+- Always report both **fit 'val_accuracy'** and **evaluate accuracy**; do not cite 100% alone.
+
 # RUN 3
 
 ## Museum CNN Training
