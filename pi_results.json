@@ -1,0 +1,43 @@
+{
+  "class_names": [
+    "bronze_bowl",
+    "crystal_cup",
+    "fish_fan",
+    "jade_figure",
+    "pen_container"
+  ],
+  "n_images": 20,
+  "split": "validation split (seed=123, fraction=0.2)",
+  "use_val_split": true,
+  "seed": 123,
+  "validation_split": 0.2,
+  "benchmark_runs": 100,
+  "models": [
+    {
+      "name": "Custom CNN (TFLite fp16)",
+      "path": "museum_fp16.tflite",
+      "img_size": [
+        180,
+        180
+      ],
+      "input_dtype": "float32",
+      "accuracy": 0.8,
+      "n_correct": 16,
+      "n_total": 20,
+      "ms_per_img": 6.79
+    },
+    {
+      "name": "MobileNet (TFLite fp16)",
+      "path": "mobilenet_museum_fp16.tflite",
+      "img_size": [
+        160,
+        160
+      ],
+      "input_dtype": "float32",
+      "accuracy": 0.75,
+      "n_correct": 15,
+      "n_total": 20,
+      "ms_per_img": 11.65
+    }
+  ]
+}
