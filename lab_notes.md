@@ -272,3 +272,8 @@ avg probability difference (on val):  0.001413
 
 **Observations:**
 This run, I added 20 picture of fish fan in another side. Although the pattern is difference, all of these pictures refer to the same class. Comparing to Run_2, the val_accuracy of CNN decrease and become lower than MobileNet, which is I expected in beginning. I guess CNN is more dependent on the dataset, because of its small size.
+
+Model     |  Mac ms/img    |  Pi ms/img     |  Slowdown factor
+----------|----------------|----------------|----------------
+Cnn       |    2.3         |   6.79         |   3
+MobileNet |   4.5          |   11.65        |   2.6
