@@ -34,4 +34,4 @@ All the original models are Keras models that are relatively large, nearly 40 MB
 ## 3.5 Deployment on Raspberry Pi
 
 ## 3.6 Evaluation metrics
-To evaluate the performance of models, I chose three dimensions to compare. Accuracy is the basic model performance indicator, measured on a held-out validation set rather than the training set. Validation accuracy shows how models perform when they are dealing with images that they haven't seen before directly. The second dimension is model file size because the final models need to be deployed on embedded systems. Model file size is proportional to the number of parameters.
+To evaluate the performance of models, I chose three dimensions to compare. Accuracy is the basic model performance indicator, measured on a held-out validation set rather than the training set. Validation accuracy shows how models perform when they are dealing with images that they haven't seen before directly. The second dimension is model file size because the final models need to be deployed on embedded systems. Model file size is proportional to the number of parameters. The larger size
