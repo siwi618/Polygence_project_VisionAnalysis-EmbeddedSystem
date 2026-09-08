@@ -21,4 +21,6 @@ The dataset this paper uses consists of five artifacts collected at Suzhou Museu
 ## 3.2 Model Architectures
 The first layer of both models is data augmentation because the total data size is about 200, which is still too small to train models. Data augmentation can help to generate more images through flipping, rotation, zooming in and out, and adjusting contrast and brightness. 
 
-Then, in the custom CNN, it has three Conv2D and MaxPooling2D layer blocks. Conv2D layer extracts features from raw images, such as edges, patterns and shapes, and the MaxPooling2D layer refines feature images to retain the significant features. 
+Then, in the custom CNN, it has three Conv2D and MaxPooling2D layer blocks. Conv2D layer extracts features from raw images, such as edges, patterns and shapes, and the MaxPooling2D layer refines feature images to retain the significant features. Flatten layer transforms the three-dimensional feature images into a one-dimensional vector matching the next two Dense layers. The first Dense layer has 128 neurons that can further combine the extracted features and perform the final classification. Because there are 5 types in the dataset, the last layer has 5 neurons, and each neuron gives a result that is a probability corresponding to each category after softmax.
+
+MobileNetV2, as a pre-trained model, has the base model frozen in Phase 1 and adapts the added classification head. Then, because of its solid foundation, MobileNetV2 only needs to fine-tune from layer 100 in Phase 2 with a lower learning rate.
