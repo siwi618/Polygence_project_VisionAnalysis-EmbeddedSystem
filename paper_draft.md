@@ -21,4 +21,4 @@ The dataset this paper uses consists of five artifacts collected at Suzhou Museu
 ## 3.2 Model Architectures
 The first layer of both models is data augmentation because the total data size is about 200, which is still too small to train models. Data augmentation can help to generate more images through flipping, rotation, zooming in and out, and adjusting contrast and brightness. 
 
-Then, in the custom CNN, it has three Conv2D and MaxPooling2D layer blocks. Conv2D layer
+Then, in the custom CNN, it has three Conv2D and MaxPooling2D layer blocks. Conv2D layer extracts features from raw images, such as edges, patterns and shapes, and the MaxPooling2D layer refines feature images to retain the significant features. 
