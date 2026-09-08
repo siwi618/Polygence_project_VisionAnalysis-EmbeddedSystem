@@ -19,3 +19,6 @@ Bermeitinger et al. deploy a CNN for classifying museum artifacts, which is the 
 The dataset this paper uses consists of five artifacts collected at Suzhou Museum West in Suzhou, China: they are a bronze bowl, a crystal cup, a fish fan, a jade figure and a pen container. In the first two runs, each artifact has around 40 images, while the fish fan only has 20 images because the museum reflected the face of the fan. In the third run, I decided to expand the images of the fish fan to 40 by adding 20 images of the other side, and the reason is that both sides refer to the fan. The ratio between the training dataset and the validation dataset is 8:2; the seed is 123. One thing to notice is that the size of the image required for the CNN and MobileNetV2 is different: it's 180×180 for the CNN and 160×160 for MobileNetV2. 
 
 ## 3.2 Model Architectures
+The first layer of both models is data augmentation because the total data size is about 200, which is still too small to train models. Data augmentation can help to generate more images through flipping, rotation, zooming in and out, and adjusting contrast and brightness. 
+
+Then, in the custom CNN, it has three Conv2D and MaxPooling2D layer blocks. Conv2D layer
