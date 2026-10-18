@@ -198,7 +198,7 @@ avg probability difference (on val):  0.001026
 
 ## Museum CNN Training
 
-**Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class.
+**Dataset:** 5 classes (bronze bowl, fish fan, jade figure, pen container, crystal cup), ~40 images per class.  The 20 back-side fish fan images on GitHub were regenerated from the original photos after the Run 3 files were lost (orientation fixed, 4:3 crop). They show the same object and viewpoints but are not byte-identical to the Run 3 training files.
 
 **Architecture:** Custom CNN (same as flower.py, output Dense layer = 5)
 
