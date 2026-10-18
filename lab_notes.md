@@ -273,7 +273,77 @@ avg probability difference (on val):  0.001413
 **Observations:**
 This run, I added 20 picture of fish fan in another side. Although the pattern is difference, all of these pictures refer to the same class. Comparing to Run_2, the val_accuracy of CNN decrease and become lower than MobileNet, which is I expected in beginning. I guess CNN is more dependent on the dataset, because of its small size.
 
-Model     |  Mac ms/img    |  Pi ms/img     |  Slowdown factor
-----------|----------------|----------------|----------------
-Cnn       |    2.3         |   6.79         |   3
-MobileNet |   4.5          |   11.65        |   2.6
+# Raspberry Pi 5 Deployment
+
+**Environment**
+- Device: Raspberry Pi 5 ([内存: 4GB/8GB?])
+- OS: [Raspberry Pi OS 版本]
+- Default Python 3.13 was incompatible with tflite-runtime → created a separate Python 3.11 environment ([用的 pyenv/conda/venv?])
+- Packages: tflite-runtime, numpy, Pillow (no full TensorFlow — runtime is far smaller and sufficient for inference)
+
+**Preprocessing (pi.py)**
+- PIL load → convert RGB → bilinear resize to 180×180 (CNN) / 160×160 (MobileNet)
+- Cast to the dtype reported by the interpreter (float32 for both)
+- Raw pixels in [0, 255]; rescaling is performed inside the model
+
+**Timing method**
+- 1 warm-up inference, then mean of 100 single-image inferences
+
+**Results**
+
+Model     | Mac ms/img | Pi ms/img | Slowdown | Pi images/sec
+----------|-----------:|----------:|---------:|-------------:
+CNN       | 2.3        | 6.79      | 2.95×    | ~147
+MobileNet | 4.5        | 11.65     | 2.59×    | ~86
+
+# Known Issue — Pi validation split (not fixed)
+
+- pi.py loaded only `.png` files (IMAGE_FORMATS = (".png",)), so non-PNG images were skipped.
+  The Pi evaluation used only 20 images (pi_results.json: n_images = 20), vs 41 on the Mac.
+- keras_val_split() uses numpy's shuffle, which does not reproduce TensorFlow's ordering,
+  so the Pi validation subset differs from the Mac validation set.
+- Pi accuracy (CNN 0.80 = 16/20, MobileNet 0.75 = 15/20) is therefore NOT comparable to Mac accuracy.
+- Decision: the paper reports inference time only for the Mac-vs-Pi comparison;
+  accuracy is reported from the Mac evaluation.
+
+  # Final Numbers for the Paper (Run 3)
+
+## Dataset
+- 207 images total: bronze bowl 44, crystal cup 39, fish fan 39, jade figure 39, pen container 46
+- Split 80/20, seed 123 → 166 training / 41 validation
+- One validation error = 2.4% accuracy
+
+## Model comparison (Mac, 41 val images)
+Model                    | Acc            | Size    | ms/img
+-------------------------|----------------|---------|-------
+CNN Keras                | 0.8537 (35/41) | 37.8 MB | 23.5
+CNN TFLite fp16          | 0.8537 (35/41) | 6.3 MB  | 2.3
+MobileNetV2 Keras        | 0.9024 (37/41) | 23.5 MB | 29.7
+MobileNetV2 TFLite fp16  | 0.9024 (37/41) | 4.3 MB  | 4.5
+
+- Size reduction: CNN 6.0×, MobileNetV2 5.5×
+- Mac speedup Keras→TFLite: CNN 10.2×, MobileNetV2 6.6×
+  (caveat: Keras timed with model.predict() per image, which includes per-call overhead)
+- Accuracy gap between models = 2 images (35 vs 37 out of 41)
+
+## TFLite verification
+- Agreement: 41/41 for both
+- Max prob diff: CNN 0.000281, MobileNetV2 0.010798
+- Avg prob diff: CNN 0.000023, MobileNetV2 0.001413
+
+## Training dynamics
+CNN:
+- Early stopping triggered after epoch 17 (max 50); best weights from epoch 12 restored (lowest val_loss 0.447)
+- Training loss fell to ~0.18 (min, epoch 16)
+- Validation loss spiked to 0.97 at epoch 14 and did not recover below 0.447
+- Final train acc 0.91 vs val acc 0.78 at epoch 17 → overfitting gap
+
+MobileNetV2:
+- Phase 1 (epochs 1–10, base frozen, lr 1e-4): train acc 0.20→0.57, val acc 0.37→0.73
+- Epoch 11 (start of Phase 2, unfreeze from layer 100, lr 1e-5):
+  training loss 1.17→1.70, training acc 0.57→0.30
+- Validation loss decreased monotonically throughout (1.43→0.44), unaffected by the spike
+- Early stopping never triggered; val loss still falling at epoch 20 → possibly undertrained
+
+## Raspberry Pi 5
+- CNN 6.79 ms (~147 img/s), MobileNetV2 11.65 ms (~86 img/s)
