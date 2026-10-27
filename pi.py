@@ -22,7 +22,7 @@ USE_VAL_SPLIT = True
 SEED = 123
 VALIDATION_SPLIT = 0.2
 N_BENCH_RUNS = 100
-IMAGE_FORMATS = (".png",)
+IMAGE_FORMATS = (".png", ".jpg", ".jpeg")  # back-side fish_fan images are .jpg
 RESULTS_PATH = BASE_DIR / "pi_results.json"
 
 MODELS = [
